@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var path = require('path'),
+	spawn = require('child_process').spawn;
+
+
+var packageJson = require(path.join(process.cwd(), 'package.json')),
+	scripts = packageJson.scripts;
+
+var scriptArgs = process.argv.slice(2);
+
+if (!scriptArgs.length) {
+	console.log('Scripts for "%s":', packageJson.name);
+	Object.keys(scripts).forEach(function(scriptName) {
+		console.log('  %s', scriptName);
+		console.log('    %s', scripts[scriptName]);
+	});
+	return;
+}
+
+var scriptName = scriptArgs.shift();
+
+if (scriptName in scripts === false) {
+	throw new Error('Unknown script: ' + scriptName);
+}
+
+var script = scripts[scriptName];
+
+console.log('> nrun %s', scriptName);
+console.log('> %s', script);
+
+script = script + ' ' + scriptArgs.map(function(arg) {
+	return '"' + arg.replace(/"/g, '\\"') + '"';
+}).join(' ');
+
+var args = ['-c', script];
+
+var cmdSpawn = spawn('/bin/sh', args, {stdio: 'inherit'});
+
+cmdSpawn.on('close', function(code) {
+	process.exit(code);
+});

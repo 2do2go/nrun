@@ -1,0 +1,28 @@
+{
+  "name": "nrun",
+  "version": "0.1.0-alpha",
+  "description": "Alternative package.json scripts runner for node.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2do2go/nrun.git"
+  },
+  "bin": {
+    "nrun": "./bin/nrun"
+  },
+  "keywords": [
+    "scripts",
+    "package.json",
+    "runner",
+    "run"
+  ],
+  "author": "2do2go team <dev.2do2go@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2do2go/nrun/issues"
+  },
+  "homepage": "https://github.com/2do2go/nrun#readme"
+}
