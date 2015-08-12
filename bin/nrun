@@ -29,11 +29,11 @@ if (scriptName in scripts === false) {
 var script = scripts[scriptName];
 
 console.log('> nrun %s', scriptName);
-console.log('> %s', script);
 
 script = script + ' ' + scriptArgs.map(function(arg) {
 	return '"' + arg.replace(/"/g, '\\"') + '"';
 }).join(' ');
+console.log('> %s', script);
 
 var args = ['-c', script];
 
