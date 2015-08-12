@@ -3,8 +3,8 @@
   "version": "0.1.1",
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ls"
+    "test": "mocha test/ --bail --reporter spec",
+    "testls": "ls"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,10 @@
   "bugs": {
     "url": "https://github.com/2do2go/nrun/issues"
   },
-  "homepage": "https://github.com/2do2go/nrun#readme"
+  "homepage": "https://github.com/2do2go/nrun#readme",
+  "devDependencies": {
+    "expect.js": "0.3.1",
+    "mocha": "2.2.5",
+    "twostep": "0.4.1"
+  }
 }
