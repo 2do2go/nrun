@@ -97,7 +97,7 @@ describe('Binary', function() {
 	it('call with unexisted script throw error to stderr', function(done) {
 		exec(binPath + ' unexisted', function(err, binData) {
 			expect(err).ok();
-			expect(err.message).match(/Unknown script: unexisted/);
+			expect(err.message).match(/Unknown script "unexisted"/);
 			done();
 		});
 	});

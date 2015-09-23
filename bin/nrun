@@ -18,13 +18,17 @@ if (!scriptArgs.length) {
 		console.log('  %s', scriptName);
 		console.log('    %s', scripts[scriptName]);
 	});
-	return;
+	process.exit();
 }
 
 var scriptName = scriptArgs.shift();
 
 if (scriptName in scripts === false) {
-	throw new Error('Unknown script: ' + scriptName);
+	console.error(
+		'Unknown script "%s" for package "%s"',
+		scriptName, packageJson.name
+	);
+	process.exit(1);
 }
 
 var script = scripts[scriptName];
