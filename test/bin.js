@@ -73,18 +73,11 @@ describe('Binary', function() {
 				exec('ls -l -h', this.slot());
 			},
 			function(err, binData, lsData) {
-				var escaped;
-				if (isWin) {
-					escaped = '> ls -l -h';
-				} else {
-					escaped = '> ls "-l" "-h"';
-				}
-
 				expect(binData.stderr).not.ok();
 				expect(binData.stdout).eql(
 					[
 						'> nrun testls',
-						escaped,
+						'> ls "-l" "-h"',
 						lsData.stdout
 					].join('\n')
 				);
@@ -96,8 +89,8 @@ describe('Binary', function() {
 
 	it('call with unexisted script throw error to stderr', function(done) {
 		exec(binPath + ' unexisted', function(err, binData) {
-			expect(err).ok();
-			expect(err.message).match(/Unknown script "unexisted"/);
+			expect(binData.stderr).ok();
+			expect(binData.stderr).match(/Unknown script "unexisted"/);
 			done();
 		});
 	});

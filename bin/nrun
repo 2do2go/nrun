@@ -18,7 +18,7 @@ if (!scriptArgs.length) {
 		console.log('  %s', scriptName);
 		console.log('    %s', scripts[scriptName]);
 	});
-	process.exit();
+	return;
 }
 
 var scriptName = scriptArgs.shift();
@@ -28,7 +28,7 @@ if (scriptName in scripts === false) {
 		'Unknown script "%s" for package "%s"',
 		scriptName, packageJson.name
 	);
-	process.exit(1);
+	return;
 }
 
 var script = scripts[scriptName];
@@ -37,9 +37,8 @@ console.log('> nrun %s', scriptName);
 
 script = script + ' ' + scriptArgs.map(function(arg) {
 	if (isWin) {
-		return arg.replace(/(\\*)"/g, '$1$1\\"')
-			.replace(/(\\*)$/, '$1$1')
-			.replace(/(\[|\(|\)|%|\!|\^|"|<|>|&|\||\;|,|\]| )/g, '\^$1');
+		return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
+			.replace(/(\\*)$/, '$1$1') + '"';
 	} else {
 		return '"' + arg.replace(/"/g, '\\"') + '"';
 	}
@@ -47,17 +46,19 @@ script = script + ' ' + scriptArgs.map(function(arg) {
 
 console.log('> %s', script);
 
-var cmd, args;
+var cmd, args,
+	spawnOpts = {stdio: 'inherit'};
 
 if (isWin) {
-	cmd = 'cmd';
-	args = ['/Q', '/C', script];
+	cmd = process.env.comspec || 'cmd.exe';
+	args = ['/s', '/c', '"' + script + '"'];
+	spawnOpts.windowsVerbatimArguments = true;
 } else {
 	cmd = '/bin/sh';
 	args = ['-c', script];
 }
 
-var cmdSpawn = spawn(cmd, args, {stdio: 'inherit'});
+var cmdSpawn = spawn(cmd, args, spawnOpts);
 
 cmdSpawn.on('close', function(code) {
 	process.exit(code);
