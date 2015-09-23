@@ -32,7 +32,13 @@ var script = scripts[scriptName];
 console.log('> nrun %s', scriptName);
 
 script = script + ' ' + scriptArgs.map(function(arg) {
-	return arg.replace(/"/g, '\\"');
+	if (!isWin) {
+		return '"' + arg.replace(/"/g, '\\"') + '"';
+	} else {
+		return arg.replace(/(\\*)"/g, '$1$1\\"')
+			.replace(/(\\*)$/, '$1$1')
+			.replace(/(\[|\(|\)|%|\!|\^|"|\<|\>|&|\||\;|,|\])/g, '\^$1');
+	}
 }).join(' ');
 console.log('> %s', script);
 

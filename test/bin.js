@@ -73,11 +73,18 @@ describe('Binary', function() {
 				exec('ls -l -h', this.slot());
 			},
 			function(err, binData, lsData) {
+				var escaped;
+				if (isWin) {
+					escaped = '> ls -l -h';
+				} else {
+					escaped = '> ls "-l" "-h"';
+				}
+				
 				expect(binData.stderr).not.ok();
 				expect(binData.stdout).eql(
 					[
 						'> nrun testls',
-						'> ls -l -h',
+						escaped,
 						lsData.stdout
 					].join('\n')
 				);
