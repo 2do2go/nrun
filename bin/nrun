@@ -40,18 +40,20 @@ script = script + ' ' + scriptArgs.map(function(arg) {
 		return '"' + arg.replace(/"/g, '\\"') + '"';
 	}
 }).join(' ');
+
 console.log('> %s', script);
 
-var args, cmdSpawn;
-var spawnOpts = {stdio: 'inherit'};
+var cmd, args;
 
 if (isWin) {
+	cmd = 'cmd';
 	args = ['/Q', '/C', script];
-	cmdSpawn = spawn('cmd', args, spawnOpts);
 } else {
+	cmd = '/bin/sh';
 	args = ['-c', script];
-	cmdSpawn = spawn('/bin/sh', args, spawnOpts);
 }
+
+var cmdSpawn = spawn(cmd, args, {stdio: 'inherit'});
 
 cmdSpawn.on('close', function(code) {
 	process.exit(code);
