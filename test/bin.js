@@ -79,7 +79,7 @@ describe('Binary', function() {
 				} else {
 					escaped = '> ls "-l" "-h"';
 				}
-				
+
 				expect(binData.stderr).not.ok();
 				expect(binData.stdout).eql(
 					[
