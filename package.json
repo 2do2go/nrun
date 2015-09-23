@@ -1,6 +1,6 @@
 {
   "name": "nrun",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
     "test": "mocha test/ --bail --reporter spec",
