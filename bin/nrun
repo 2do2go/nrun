@@ -7,7 +7,8 @@ var path = require('path'),
 
 
 var packageJson = require(path.join(process.cwd(), 'package.json')),
-	scripts = packageJson.scripts;
+	scripts = packageJson.scripts,
+	isWin = process.platform.substring(0, 3) === 'win';
 
 var scriptArgs = process.argv.slice(2);
 
@@ -31,13 +32,20 @@ var script = scripts[scriptName];
 console.log('> nrun %s', scriptName);
 
 script = script + ' ' + scriptArgs.map(function(arg) {
-	return '"' + arg.replace(/"/g, '\\"') + '"';
+	return arg.replace(/"/g, '\\"');
 }).join(' ');
 console.log('> %s', script);
 
-var args = ['-c', script];
+var args, cmdSpawn;
+var spawnOpts = {stdio: 'inherit'};
 
-var cmdSpawn = spawn('/bin/sh', args, {stdio: 'inherit'});
+if (!isWin) {
+	args = ['-c', script];
+	cmdSpawn = spawn('/bin/sh', args, spawnOpts);
+} else {
+	args = ['/Q', '/C', script];
+	cmdSpawn = spawn('cmd', args, spawnOpts);
+}
 
 cmdSpawn.on('close', function(code) {
 	process.exit(code);
