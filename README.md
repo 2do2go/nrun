@@ -13,4 +13,8 @@ nrun test --reporter dot
 
 contrasting to ```npm run test -- --reporter dot```.
 
-nrun get scripts from `package.json` and runs them using `spawn` and `bin/sh`.
+nrun gets script from `package.json` and runs it using `spawn` and current
+shell.
+
+
+[![Build Status](https://travis-ci.org/2do2go/nrun.svg?branch=master)](https://travis-ci.org/2do2go/nrun)
