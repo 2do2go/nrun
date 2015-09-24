@@ -72,7 +72,7 @@ if (isWin) {
 	args = ['/s', '/c', '"' + script + '"'];
 	spawnOpts.windowsVerbatimArguments = true;
 } else {
-	cmd = '/bin/sh';
+	cmd = process.env.SHELL || '/bin/sh';
 	args = ['-c', script];
 }
 
