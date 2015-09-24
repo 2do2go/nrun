@@ -12,13 +12,31 @@ var packageJson = require(path.join(process.cwd(), 'package.json')),
 
 var scriptArgs = process.argv.slice(2);
 
+function exit(code) {
+	function done() {
+		if (!(draining--)) {
+			process.exit(code);
+		}
+	}
+
+	var draining = 0;
+	var streams = [process.stdout, process.stderr];
+
+	streams.forEach(function(stream){
+		draining += 1;
+		stream.write('', done);
+	});
+
+	done();
+};
+
 if (!scriptArgs.length) {
 	console.log('Scripts for "%s":', packageJson.name);
 	Object.keys(scripts).forEach(function(scriptName) {
 		console.log('  %s', scriptName);
 		console.log('    %s', scripts[scriptName]);
 	});
-	return;
+	return exit(0);
 }
 
 var scriptName = scriptArgs.shift();
@@ -28,7 +46,7 @@ if (scriptName in scripts === false) {
 		'Unknown script "%s" for package "%s"',
 		scriptName, packageJson.name
 	);
-	return;
+	return exit(1);
 }
 
 var script = scripts[scriptName];
