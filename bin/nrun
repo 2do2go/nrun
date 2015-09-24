@@ -76,8 +76,5 @@ if (isWin) {
 	args = ['-c', script];
 }
 
-var cmdSpawn = spawn(cmd, args, spawnOpts);
-
-cmdSpawn.on('close', function(code) {
-	process.exit(code);
-});
+spawn(cmd, args, spawnOpts)
+	.on('close', exit);
