@@ -3,7 +3,8 @@
 'use strict';
 
 var path = require('path'),
-	spawn = require('child_process').spawn;
+	spawn = require('child_process').spawn,
+	fs = require('fs');
 
 
 var packageJson = require(path.join(process.cwd(), 'package.json')),
@@ -28,7 +29,7 @@ function exit(code) {
 	});
 
 	done();
-};
+}
 
 if (!scriptArgs.length) {
 	console.log('Scripts for "%s":', packageJson.name);
@@ -36,6 +37,13 @@ if (!scriptArgs.length) {
 		console.log('  %s', scriptName);
 		console.log('    %s', scripts[scriptName]);
 	});
+	return exit(0);
+}
+
+if (scriptArgs.indexOf('--completion') >= 0) {
+	console.log(
+		fs.readFileSync(path.join(__dirname, 'completion.sh'), {encoding: 'utf8'})
+	);
 	return exit(0);
 }
 
