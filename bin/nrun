@@ -42,7 +42,7 @@ if (!scriptArgs.length) {
 
 if (scriptArgs.indexOf('--completion') >= 0) {
 	console.log(
-		fs.readFileSync(path.join(__dirname, 'completion.sh'), {encoding: 'utf8'})
+		fs.readFileSync(path.join(__dirname, 'completion.sh'), 'utf8')
 	);
 	return exit(0);
 }
