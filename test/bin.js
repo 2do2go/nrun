@@ -2,7 +2,13 @@
 
 var expect = require('expect.js'),
 	Steppy = require('twostep').Steppy,
-	childProcess = require('child_process');
+	childProcess = require('child_process'),
+	fs = require('fs'),
+	path = require('path');
+
+var completionShContent = fs.readFileSync(
+	path.join(__dirname, '../bin/completion.sh'), {encoding: 'utf8'}
+);
 
 var isWin = process.platform.substring(0, 3) === 'win';
 
@@ -94,4 +100,14 @@ describe('Binary', function() {
 			done();
 		});
 	});
+
+	it('call with "--completion" option should return completion.sh content',
+		function(done) {
+			exec(binPath + ' --completion', function(err, binData) {
+				expect(binData.stderr).not.ok();
+				expect(binData.stdout).to.be(completionShContent + '\n');
+				done();
+			});
+		}
+	);
 });
