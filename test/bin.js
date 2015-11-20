@@ -7,7 +7,7 @@ var expect = require('expect.js'),
 	path = require('path');
 
 var completionShContent = fs.readFileSync(
-	path.join(__dirname, '../bin/completion.sh'), {encoding: 'utf8'}
+	path.join(__dirname, '../bin/completion.sh'), 'utf8'
 );
 
 var isWin = process.platform.substring(0, 3) === 'win';
