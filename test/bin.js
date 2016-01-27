@@ -89,9 +89,12 @@ describe('Binary', function() {
 						'> ' + cmd + ' ',
 						cmdData.stdout.replace(
 							new RegExp(os.EOL + '$'),
-							path.delimiter + 'node_modules/.bin' + os.EOL
+							(
+								path.delimiter + 'node_modules' + path.sep +
+								'.bin' + (isWin ? ' ' : '') + os.EOL
+							)
 						)
-					].join(os.EOL)
+					].join('\n')
 				);
 				this.pass(null);
 			},

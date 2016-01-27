@@ -86,7 +86,9 @@ var cmd, args,
 	};
 
 // add binaries to path
-spawnOpts.env.PATH = process.env.PATH + path.delimiter + 'node_modules/.bin';
+spawnOpts.env.PATH = (
+	process.env.PATH + path.delimiter + 'node_modules' + path.sep + '.bin'
+);
 
 if (isWin) {
 	cmd = process.env.comspec || 'cmd.exe';
