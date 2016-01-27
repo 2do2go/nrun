@@ -4,7 +4,9 @@
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
     "test": "mocha test/ --bail --reporter spec",
-    "testls": "ls"
+    "testLs": "ls",
+    "testShowPath": "echo $PATH",
+    "testShowPathWin": "echo %PATH%"
   },
   "repository": {
     "type": "git",
