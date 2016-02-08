@@ -90,8 +90,8 @@ describe('Binary', function() {
 						cmdData.stdout.replace(
 							new RegExp(os.EOL + '$'),
 							(
-								path.delimiter + 'node_modules' + path.sep +
-								'.bin' + (isWin ? ' ' : '') + os.EOL
+								path.delimiter + path.resolve('node_modules', '.bin') +
+								(isWin ? ' ' : '') + os.EOL
 							)
 						)
 					].join('\n')

@@ -38,6 +38,12 @@ function extend(dst, src) {
 	return dst;
 }
 
+function findEnvVarName(env, names) {
+	for (var index in names) {
+		if (names[index] in env) return names[index];
+	}
+}
+
 if (!scriptArgs.length) {
 	console.log('Scripts for "%s":', packageJson.name);
 	Object.keys(scripts).forEach(function(scriptName) {
@@ -79,19 +85,19 @@ script = script + ' ' + scriptArgs.map(function(arg) {
 
 console.log('> %s', script);
 
-var cmd, args,
-	spawnOpts = {
-		stdio: 'inherit',
-		env: extend({}, process.env)
-	};
+var cmd, args;
+var spawnOpts = {
+	stdio: 'inherit',
+	env: extend({}, process.env)
+};
 
 // add binaries to path
-spawnOpts.env.PATH = (
-	process.env.PATH + path.delimiter + 'node_modules' + path.sep + '.bin'
-);
+var pathVarName = findEnvVarName(process.env, ['PATH', 'Path', 'path']);
+spawnOpts.env[pathVarName] += path.delimiter +
+	path.resolve('node_modules', '.bin');
 
 if (isWin) {
-	cmd = process.env.comspec || 'cmd.exe';
+	cmd = process.env.comspec || 'cmd';
 	args = ['/s', '/c', '"' + script + '"'];
 	spawnOpts.windowsVerbatimArguments = true;
 } else {
