@@ -42,7 +42,13 @@ describe('Binary', function() {
 						'  testShowPath',
 						'    echo $PATH',
 						'  testShowPathWin',
-						'    echo %PATH%'
+						'    echo %PATH%',
+						'  pretestEcho',
+						'    echo prescript',
+						'  testEcho',
+						'    echo script',
+						'  posttestEcho',
+						'    echo postscript'
 					].join('\n') + '\n'
 				);
 				this.pass(null);
@@ -118,6 +124,44 @@ describe('Binary', function() {
 					].join('\n')
 				);
 				this.pass(null);
+			},
+			done
+		);
+	});
+
+	it('call script that has `pre` and `post` scripts', function(done) {
+		Steppy(
+			function() {
+				exec(binPath + ' testEcho', this.slot());
+				exec('echo prescript', this.slot());
+			},
+			function(err, binData, prescriptData) {
+				this.pass(binData, prescriptData);
+
+				exec('echo script', this.slot());
+			},
+			function(err, binData, prescriptData, scriptData) {
+				this.pass(binData, prescriptData, scriptData);
+
+				exec('echo postscript', this.slot());
+			},
+			function(err, binData, prescriptData, scriptData, postscriptData) {
+				expect(binData.stderr).not.ok();
+				expect(binData.stdout).eql(
+					[
+						'> nrun pretestEcho',
+						'> echo prescript',
+						prescriptData.stdout,
+
+						'> nrun testEcho',
+						'> echo script',
+						scriptData.stdout,
+
+						'> nrun posttestEcho',
+						'> echo postscript',
+						postscriptData.stdout,
+					].join('\n')
+				);
 			},
 			done
 		);
