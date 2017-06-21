@@ -162,7 +162,6 @@ describe('Binary', function() {
 						postscriptData.stdout
 					].join('\n')
 				);
-
 				this.pass(null);
 			},
 			done

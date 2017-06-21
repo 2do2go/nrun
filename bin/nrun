@@ -44,6 +44,21 @@ function findEnvVarName(env, names) {
 	}
 }
 
+function addArgumentsToScript(script, args) {
+	if (args.length) {
+		script = script + ' ' + args.map(function(arg) {
+			if (isWin) {
+				return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
+					.replace(/(\\*)$/, '$1$1') + '"';
+			} else {
+				return '"' + arg.replace(/"/g, '\\"') + '"';
+			}
+		}).join(' ');
+	}
+
+	return script;
+}
+
 function runSingleScript(scriptName, script, callback) {
 	console.log('> nrun %s', scriptName);
 	console.log('> %s', script);
@@ -72,7 +87,7 @@ function runSingleScript(scriptName, script, callback) {
 		.on('close', callback);
 }
 
-function runScript(scriptName, script, callback) {
+function runScript(scriptName, callback) {
 	var preScriptName = 'pre' + scriptName,
 		postScriptName = 'post' + scriptName,
 		scriptsToRun = [];
@@ -80,26 +95,31 @@ function runScript(scriptName, script, callback) {
 	if (scripts[preScriptName]) {
 		scriptsToRun.push({
 			scriptName: preScriptName,
-			script: scripts[preScriptName]
+			args: []
 		});
 	}
 
 	scriptsToRun.push({
 		scriptName: scriptName,
-		script: script
+		args: scriptArgs
 	});
 
 	if (scripts[postScriptName]) {
 		scriptsToRun.push({
 			scriptName: postScriptName,
-			script: scripts[postScriptName]
+			args: []
 		});
 	}
 
 	function run(index) {
+		var item = scriptsToRun[index],
+			scriptName = item.scriptName,
+			args = item.args,
+			script = scripts[scriptName];
+
 		runSingleScript(
-			scriptsToRun[index].scriptName,
-			scriptsToRun[index].script,
+			scriptName,
+			addArgumentsToScript(script, args),
 			function(code) {
 				if (code || index === scriptsToRun.length - 1) {
 					return callback(code);
@@ -140,17 +160,4 @@ if (scriptName in scripts === false) {
 	return exit(1);
 }
 
-var script = scripts[scriptName];
-
-if (scriptArgs.length) {
-	script = script + ' ' + scriptArgs.map(function(arg) {
-		if (isWin) {
-			return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
-				.replace(/(\\*)$/, '$1$1') + '"';
-		} else {
-			return '"' + arg.replace(/"/g, '\\"') + '"';
-		}
-	}).join(' ');
-}
-
-runScript(scriptName, script, exit);
+runScript(scriptName, exit);
