@@ -44,6 +44,76 @@ function findEnvVarName(env, names) {
 	}
 }
 
+function runSingleScript(scriptName, script, callback) {
+	console.log('> nrun %s', scriptName);
+	console.log('> %s', script);
+
+	var cmd, args;
+	var spawnOpts = {
+		stdio: 'inherit',
+		env: extend({}, process.env)
+	};
+
+	// add binaries to path
+	var pathVarName = findEnvVarName(process.env, ['PATH', 'Path', 'path']);
+	spawnOpts.env[pathVarName] += path.delimiter +
+		path.resolve('node_modules', '.bin');
+
+	if (isWin) {
+		cmd = process.env.comspec || 'cmd';
+		args = ['/s', '/c', '"' + script + '"'];
+		spawnOpts.windowsVerbatimArguments = true;
+	} else {
+		cmd = process.env.SHELL || '/bin/sh';
+		args = ['-c', script];
+	}
+
+	spawn(cmd, args, spawnOpts)
+		.on('close', callback);
+}
+
+function runScript(scriptName, script, callback) {
+	var preScriptName = 'pre' + scriptName,
+		postScriptName = 'post' + scriptName,
+		scriptsToRun = [];
+
+	if (scripts[preScriptName]) {
+		scriptsToRun.push({
+			scriptName: preScriptName,
+			script: scripts[preScriptName]
+		});
+	}
+
+	scriptsToRun.push({
+		scriptName: scriptName,
+		script: script
+	});
+
+	if (scripts[postScriptName]) {
+		scriptsToRun.push({
+			scriptName: postScriptName,
+			script: scripts[postScriptName]
+		});
+	}
+
+	function run(index) {
+		runSingleScript(
+			scriptsToRun[index].scriptName,
+			scriptsToRun[index].script,
+			function(code) {
+				if (code || index === scriptsToRun.length - 1) {
+					return callback(code);
+				}
+
+				console.log('');
+				run(index + 1);
+			}
+		);
+	}
+
+	run(0);
+}
+
 if (!scriptArgs.length) {
 	console.log('Scripts for "%s":', packageJson.name);
 	Object.keys(scripts).forEach(function(scriptName) {
@@ -72,38 +142,15 @@ if (scriptName in scripts === false) {
 
 var script = scripts[scriptName];
 
-console.log('> nrun %s', scriptName);
-
-script = script + ' ' + scriptArgs.map(function(arg) {
-	if (isWin) {
-		return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
-			.replace(/(\\*)$/, '$1$1') + '"';
-	} else {
-		return '"' + arg.replace(/"/g, '\\"') + '"';
-	}
-}).join(' ');
-
-console.log('> %s', script);
-
-var cmd, args;
-var spawnOpts = {
-	stdio: 'inherit',
-	env: extend({}, process.env)
-};
-
-// add binaries to path
-var pathVarName = findEnvVarName(process.env, ['PATH', 'Path', 'path']);
-spawnOpts.env[pathVarName] += path.delimiter +
-	path.resolve('node_modules', '.bin');
-
-if (isWin) {
-	cmd = process.env.comspec || 'cmd';
-	args = ['/s', '/c', '"' + script + '"'];
-	spawnOpts.windowsVerbatimArguments = true;
-} else {
-	cmd = process.env.SHELL || '/bin/sh';
-	args = ['-c', script];
+if (scriptArgs.length) {
+	script = script + ' ' + scriptArgs.map(function(arg) {
+		if (isWin) {
+			return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
+				.replace(/(\\*)$/, '$1$1') + '"';
+		} else {
+			return '"' + arg.replace(/"/g, '\\"') + '"';
+		}
+	}).join(' ');
 }
 
-spawn(cmd, args, spawnOpts)
-	.on('close', exit);
+runScript(scriptName, script, exit);

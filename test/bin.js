@@ -68,7 +68,7 @@ describe('Binary', function() {
 				expect(binData.stdout).eql(
 					[
 						'> nrun testLs',
-						'> ls ',
+						'> ls',
 						lsData.stdout
 					].join('\n')
 				);
@@ -92,7 +92,7 @@ describe('Binary', function() {
 				expect(binData.stdout).eql(
 					[
 						'> nrun ' + script,
-						'> ' + cmd + ' ',
+						'> ' + cmd,
 						cmdData.stdout.replace(
 							new RegExp(os.EOL + '$'),
 							(
@@ -132,20 +132,20 @@ describe('Binary', function() {
 	it('call script that has `pre` and `post` scripts', function(done) {
 		Steppy(
 			function() {
-				exec(binPath + ' testEcho', this.slot());
 				exec('echo prescript', this.slot());
 			},
-			function(err, binData, prescriptData) {
-				this.pass(binData, prescriptData);
+			function(err, prescriptData) {
+				this.pass(prescriptData);
 
 				exec('echo script', this.slot());
 			},
-			function(err, binData, prescriptData, scriptData) {
-				this.pass(binData, prescriptData, scriptData);
+			function(err, prescriptData, scriptData) {
+				this.pass(prescriptData, scriptData);
 
 				exec('echo postscript', this.slot());
+				exec(binPath + ' testEcho', this.slot());
 			},
-			function(err, binData, prescriptData, scriptData, postscriptData) {
+			function(err, prescriptData, scriptData, postscriptData, binData) {
 				expect(binData.stderr).not.ok();
 				expect(binData.stdout).eql(
 					[
@@ -159,9 +159,11 @@ describe('Binary', function() {
 
 						'> nrun posttestEcho',
 						'> echo postscript',
-						postscriptData.stdout,
+						postscriptData.stdout
 					].join('\n')
 				);
+
+				this.pass(null);
 			},
 			done
 		);
