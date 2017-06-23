@@ -42,7 +42,13 @@ describe('Binary', function() {
 						'  testShowPath',
 						'    echo $PATH',
 						'  testShowPathWin',
-						'    echo %PATH%'
+						'    echo %PATH%',
+						'  pretestEcho',
+						'    echo prescript',
+						'  testEcho',
+						'    echo script',
+						'  posttestEcho',
+						'    echo postscript'
 					].join('\n') + '\n'
 				);
 				this.pass(null);
@@ -62,7 +68,7 @@ describe('Binary', function() {
 				expect(binData.stdout).eql(
 					[
 						'> nrun testLs',
-						'> ls ',
+						'> ls',
 						lsData.stdout
 					].join('\n')
 				);
@@ -86,7 +92,7 @@ describe('Binary', function() {
 				expect(binData.stdout).eql(
 					[
 						'> nrun ' + script,
-						'> ' + cmd + ' ',
+						'> ' + cmd,
 						cmdData.stdout.replace(
 							new RegExp(os.EOL + '$'),
 							(
@@ -115,6 +121,45 @@ describe('Binary', function() {
 						'> nrun testLs',
 						'> ls "-l" "-h"',
 						lsData.stdout
+					].join('\n')
+				);
+				this.pass(null);
+			},
+			done
+		);
+	});
+
+	it('call script that has `pre` and `post` scripts', function(done) {
+		Steppy(
+			function() {
+				exec('echo prescript', this.slot());
+			},
+			function(err, prescriptData) {
+				this.pass(prescriptData);
+
+				exec('echo script', this.slot());
+			},
+			function(err, prescriptData, scriptData) {
+				this.pass(prescriptData, scriptData);
+
+				exec('echo postscript', this.slot());
+				exec(binPath + ' testEcho', this.slot());
+			},
+			function(err, prescriptData, scriptData, postscriptData, binData) {
+				expect(binData.stderr).not.ok();
+				expect(binData.stdout).eql(
+					[
+						'> nrun pretestEcho',
+						'> echo prescript',
+						prescriptData.stdout,
+
+						'> nrun testEcho',
+						'> echo script',
+						scriptData.stdout,
+
+						'> nrun posttestEcho',
+						'> echo postscript',
+						postscriptData.stdout
 					].join('\n')
 				);
 				this.pass(null);

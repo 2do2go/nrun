@@ -6,7 +6,10 @@
     "test": "mocha test/ --bail --reporter spec",
     "testLs": "ls",
     "testShowPath": "echo $PATH",
-    "testShowPathWin": "echo %PATH%"
+    "testShowPathWin": "echo %PATH%",
+    "pretestEcho": "echo prescript",
+    "testEcho": "echo script",
+    "posttestEcho": "echo postscript"
   },
   "repository": {
     "type": "git",
