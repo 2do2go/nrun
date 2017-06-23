@@ -7,11 +7,7 @@ var path = require('path'),
 	fs = require('fs');
 
 
-var packageJson = require(path.join(process.cwd(), 'package.json')),
-	scripts = packageJson.scripts,
-	isWin = process.platform.substring(0, 3) === 'win';
-
-var scriptArgs = process.argv.slice(2);
+var isWin = process.platform.substring(0, 3) === 'win';
 
 function exit(code) {
 	function done() {
@@ -44,9 +40,9 @@ function findEnvVarName(env, names) {
 	}
 }
 
-function addArgumentsToScript(script, args) {
+function addArgumentsToCommand(command, args) {
 	if (args.length) {
-		script = script + ' ' + args.map(function(arg) {
+		command = command + ' ' + args.map(function(arg) {
 			if (isWin) {
 				return '"' + arg.replace(/(\\*)"/g, '$1$1\\"')
 					.replace(/(\\*)$/, '$1$1') + '"';
@@ -56,14 +52,11 @@ function addArgumentsToScript(script, args) {
 		}).join(' ');
 	}
 
-	return script;
+	return command;
 }
 
-function runSingleScript(scriptName, script, callback) {
-	console.log('> nrun %s', scriptName);
-	console.log('> %s', script);
-
-	var cmd, args;
+function runCommand(command, callback) {
+	var shell, shellArgs;
 	var spawnOpts = {
 		stdio: 'inherit',
 		env: extend({}, process.env)
@@ -75,53 +68,29 @@ function runSingleScript(scriptName, script, callback) {
 		path.resolve('node_modules', '.bin');
 
 	if (isWin) {
-		cmd = process.env.comspec || 'cmd';
-		args = ['/s', '/c', '"' + script + '"'];
+		shell = process.env.comspec || 'cmd';
+		shellArgs = ['/s', '/c', '"' + command + '"'];
 		spawnOpts.windowsVerbatimArguments = true;
 	} else {
-		cmd = process.env.SHELL || '/bin/sh';
-		args = ['-c', script];
+		shell = process.env.SHELL || '/bin/sh';
+		shellArgs = ['-c', command];
 	}
 
-	spawn(cmd, args, spawnOpts)
+	spawn(shell, shellArgs, spawnOpts)
 		.on('close', callback);
 }
 
-function runScript(scriptName, callback) {
-	var preScriptName = 'pre' + scriptName,
-		postScriptName = 'post' + scriptName,
-		scriptsToRun = [];
-
-	if (scripts[preScriptName]) {
-		scriptsToRun.push({
-			scriptName: preScriptName,
-			args: []
-		});
-	}
-
-	scriptsToRun.push({
-		scriptName: scriptName,
-		args: scriptArgs
-	});
-
-	if (scripts[postScriptName]) {
-		scriptsToRun.push({
-			scriptName: postScriptName,
-			args: []
-		});
-	}
-
+function runScripts(scripts, callback) {
 	function run(index) {
-		var item = scriptsToRun[index],
-			scriptName = item.scriptName,
-			args = item.args,
-			script = scripts[scriptName];
+		var script = scripts[index];
 
-		runSingleScript(
-			scriptName,
-			addArgumentsToScript(script, args),
+		console.log('> nrun %s', script.name);
+		console.log('> %s', script.command);
+
+		runCommand(
+			script.command,
 			function(code) {
-				if (code || index === scriptsToRun.length - 1) {
+				if (code || index === scripts.length - 1) {
 					return callback(code);
 				}
 
@@ -134,6 +103,11 @@ function runScript(scriptName, callback) {
 	run(0);
 }
 
+
+var packageJson = require(path.join(process.cwd(), 'package.json')),
+	scripts = packageJson.scripts,
+	scriptArgs = process.argv.slice(2);
+
 if (!scriptArgs.length) {
 	console.log('Scripts for "%s":', packageJson.name);
 	Object.keys(scripts).forEach(function(scriptName) {
@@ -145,7 +119,10 @@ if (!scriptArgs.length) {
 
 if (scriptArgs.indexOf('--completion') >= 0) {
 	console.log(
-		fs.readFileSync(path.join(__dirname, 'completion.sh'), 'utf8')
+		fs.readFileSync(
+			path.join(__dirname, 'completion.sh'),
+			'utf8'
+		)
 	);
 	return exit(0);
 }
@@ -160,4 +137,27 @@ if (scriptName in scripts === false) {
 	return exit(1);
 }
 
-runScript(scriptName, exit);
+var preScriptName = 'pre' + scriptName,
+	postScriptName = 'post' + scriptName,
+	scriptsToRun = [];
+
+if (scripts[preScriptName]) {
+	scriptsToRun.push({
+		name: preScriptName,
+		command: scripts[preScriptName]
+	});
+}
+
+scriptsToRun.push({
+	name: scriptName,
+	command: addArgumentsToCommand(scripts[scriptName], scriptArgs)
+});
+
+if (scripts[postScriptName]) {
+	scriptsToRun.push({
+		name: postScriptName,
+		command: scripts[postScriptName]
+	});
+}
+
+runScripts(scriptsToRun, exit);
