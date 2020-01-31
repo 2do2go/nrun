@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
+    "lint": "eslint ./",
     "test": "mocha test/ --bail --reporter spec",
     "testLs": "ls",
     "testShowPath": "echo $PATH",
@@ -31,6 +32,9 @@
   },
   "homepage": "https://github.com/2do2go/nrun#readme",
   "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0",
     "expect.js": "0.3.1",
     "mocha": "2.2.5",
     "twostep": "0.4.1"
