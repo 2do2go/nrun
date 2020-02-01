@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
-    "test": "mocha test/ --bail --reporter spec",
+    "lint": "eslint ./",
+    "test": "jest",
     "testLs": "ls",
+    "spellcheck": "yaspeller-ci *.md",
     "testShowPath": "echo $PATH",
     "testShowPathWin": "echo %PATH%",
     "pretestEcho": "echo prescript",
@@ -16,7 +18,7 @@
     "url": "git+https://github.com/2do2go/nrun.git"
   },
   "bin": {
-    "nrun": "./bin/nrun"
+    "nrun": "./bin/nrun.js"
   },
   "keywords": [
     "scripts",
@@ -31,8 +33,27 @@
   },
   "homepage": "https://github.com/2do2go/nrun#readme",
   "devDependencies": {
-    "expect.js": "0.3.1",
-    "mocha": "2.2.5",
-    "twostep": "0.4.1"
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0",
+    "husky": "^4.2.1",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
+    "yaspeller-ci": "^1.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.md": "yaspeller-ci"
+  },
+  "yaspeller": {
+    "dictionary": [
+      "nrun",
+      "js"
+    ]
   }
 }
