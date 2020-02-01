@@ -54,6 +54,8 @@ exports[`Call without arguments should return list of scripts 1`] = `
     jest
   testLs
     ls
+  spellcheck
+    yaspeller-ci *.md
   testShowPath
     echo $PATH
   testShowPathWin
