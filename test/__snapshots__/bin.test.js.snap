@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Call script that has \`pre\` and \`post\` scripts 1`] = `
+"> nrun pretestEcho
+> echo prescript
+prescript
+
+> nrun testEcho
+> echo script
+script
+
+> nrun posttestEcho
+> echo postscript
+postscript
+"
+`;
+
+exports[`Call script that has \`pre\` and \`post\` scripts 2`] = `""`;
+
+exports[`Call with more args calls target script args 1`] = `
+"> nrun testLs
+> ls \\"-w\\" \\"15\\" \\"-m\\"
+bin, LICENSE,
+node_modules,
+package.json,
+package-lock.json,
+README.md,
+test
+"
+`;
+
+exports[`Call with more args calls target script args 2`] = `""`;
+
+exports[`Call with single arg calls target script 1`] = `
+"> nrun testLs
+> ls
+bin
+LICENSE
+node_modules
+package.json
+package-lock.json
+README.md
+test
+"
+`;
+
+exports[`Call with single arg calls target script 2`] = `""`;
+
+exports[`Call without arguments should return list of scripts 1`] = `
+"Scripts for \\"nrun\\":
+  lint
+    eslint ./
+  test
+    jest
+  testLs
+    ls
+  testShowPath
+    echo $PATH
+  testShowPathWin
+    echo %PATH%
+  pretestEcho
+    echo prescript
+  testEcho
+    echo script
+  posttestEcho
+    echo postscript
+"
+`;
+
+exports[`Call without arguments should return list of scripts 2`] = `""`;

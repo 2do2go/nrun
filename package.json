@@ -4,7 +4,7 @@
   "description": "Alternative package.json scripts runner for node.js",
   "scripts": {
     "lint": "eslint ./",
-    "test": "mocha test/ --bail --reporter spec",
+    "test": "jest",
     "testLs": "ls",
     "testShowPath": "echo $PATH",
     "testShowPathWin": "echo %PATH%",
@@ -17,7 +17,7 @@
     "url": "git+https://github.com/2do2go/nrun.git"
   },
   "bin": {
-    "nrun": "./bin/nrun"
+    "nrun": "./bin/nrun.js"
   },
   "keywords": [
     "scripts",
@@ -35,8 +35,6 @@
     "eslint": "^6.1.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
-    "expect.js": "0.3.1",
-    "mocha": "2.2.5",
-    "twostep": "0.4.1"
+    "jest": "^25.1.0"
   }
 }
