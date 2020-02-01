@@ -6,6 +6,7 @@
     "lint": "eslint ./",
     "test": "jest",
     "testLs": "ls",
+    "spellcheck": "yaspeller-ci *.md",
     "testShowPath": "echo $PATH",
     "testShowPathWin": "echo %PATH%",
     "pretestEcho": "echo prescript",
@@ -37,7 +38,8 @@
     "eslint-plugin-import": "^2.20.0",
     "husky": "^4.2.1",
     "jest": "^25.1.0",
-    "lint-staged": "^10.0.7"
+    "lint-staged": "^10.0.7",
+    "yaspeller-ci": "^1.0.1"
   },
   "husky": {
     "hooks": {
@@ -45,6 +47,13 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.js": "eslint --cache --fix",
+    "*.md": "yaspeller-ci"
+  },
+  "yaspeller": {
+    "dictionary": [
+      "nrun",
+      "js"
+    ]
   }
 }
